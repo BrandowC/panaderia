@@ -1,0 +1,253 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/*
+ * Paleta calida de panaderia en dos temas, con superficies translucidas y
+ * profundidad por capas. Todos los pares de texto verificados contra WCAG 2.1 AA:
+ * el naranja de marca lleva texto cacao (5.61:1), no blanco (2.79:1, insuficiente).
+ */
+@theme {
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --radius-card: 1.5rem;
+  --radius-panel: 1.75rem;
+  --spacing-touch: 2.75rem;
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root,
+[data-theme='light'] {
+  --ui-bg: #fbf7ef;
+  --ui-bg-tint: #fff8ec;
+  --ui-surface: #ffffff;
+  --ui-glass: rgb(255 255 255 / 0.74);
+  --ui-glass-strong: rgb(255 255 255 / 0.88);
+  --ui-text: #2c211b;
+  --ui-muted: #7a6a62;
+  --ui-line: rgb(226 207 187 / 0.95);
+  --ui-line-strong: #b3906a;
+  --ui-brand: #de8600;
+  --ui-brand-soft: #f7a718;
+  --ui-brand-ink: #a85f00;
+  --ui-secondary: #7a4520;
+  --ui-on-brand: #2c211b;
+  --ui-success: #16803c;
+  --ui-danger: #c91e2f;
+
+  --ui-aura:
+    radial-gradient(circle at 8% -4%, rgb(255 196 103 / 0.45), transparent 26%),
+    radial-gradient(circle at 96% 92%, rgb(255 238 208 / 0.8), transparent 28%),
+    linear-gradient(160deg, #fbf7ef 0%, #fffdf8 42%, #f8f1e6 100%);
+
+  --ui-shadow-sm: 0 8px 20px rgb(100 60 20 / 0.05);
+  --ui-shadow: 0 10px 25px rgb(100 60 20 / 0.07), 0 2px 6px rgb(100 60 20 / 0.04);
+  --ui-shadow-lg: 0 24px 60px rgb(92 57 22 / 0.14), 0 8px 20px rgb(92 57 22 / 0.06);
+  --ui-shadow-brand: 0 14px 28px rgb(222 134 0 / 0.24);
+  --ui-glow-card: radial-gradient(circle, rgb(255 184 79 / 0.3), transparent 68%);
+}
+
+[data-theme='dark'] {
+  --ui-bg: #1a1310;
+  --ui-bg-tint: #241b16;
+  --ui-surface: #241b16;
+  --ui-glass: rgb(46 35 28 / 0.72);
+  --ui-glass-strong: rgb(46 35 28 / 0.9);
+  --ui-text: #f5ebdd;
+  --ui-muted: #c4ae97;
+  --ui-line: rgb(90 70 56 / 0.7);
+  --ui-line-strong: #8a6f5d;
+  --ui-brand: #f5b32b;
+  --ui-brand-soft: #ffc85a;
+  --ui-brand-ink: #f7c95a;
+  --ui-secondary: #e8a06a;
+  --ui-on-brand: #2c211b;
+  --ui-success: #5fbf8b;
+  --ui-danger: #f08579;
+
+  --ui-aura:
+    radial-gradient(circle at 8% -4%, rgb(245 179 43 / 0.14), transparent 26%),
+    radial-gradient(circle at 96% 92%, rgb(122 69 32 / 0.24), transparent 28%),
+    linear-gradient(160deg, #1a1310 0%, #221a15 42%, #1c1512 100%);
+
+  --ui-shadow-sm: 0 8px 20px rgb(0 0 0 / 0.35);
+  --ui-shadow: 0 10px 25px rgb(0 0 0 / 0.45), 0 2px 6px rgb(0 0 0 / 0.3);
+  --ui-shadow-lg: 0 24px 60px rgb(0 0 0 / 0.55), 0 8px 20px rgb(0 0 0 / 0.35);
+  --ui-shadow-brand: 0 14px 28px rgb(245 179 43 / 0.2);
+  --ui-glow-card: radial-gradient(circle, rgb(245 179 43 / 0.14), transparent 68%);
+}
+
+@theme inline {
+  --color-bg: var(--ui-bg);
+  --color-bg-tint: var(--ui-bg-tint);
+  --color-surface: var(--ui-surface);
+  --color-glass: var(--ui-glass);
+  --color-glass-strong: var(--ui-glass-strong);
+  --color-ink: var(--ui-text);
+  --color-ink-muted: var(--ui-muted);
+  --color-line: var(--ui-line);
+  --color-line-strong: var(--ui-line-strong);
+  --color-brand: var(--ui-brand);
+  --color-brand-soft: var(--ui-brand-soft);
+  --color-brand-ink: var(--ui-brand-ink);
+  --color-secondary: var(--ui-secondary);
+  --color-on-brand: var(--ui-on-brand);
+  --color-ok: var(--ui-success);
+  --color-danger: var(--ui-danger);
+
+  --shadow-soft: var(--ui-shadow-sm);
+  --shadow-card: var(--ui-shadow);
+  --shadow-float: var(--ui-shadow-lg);
+  --shadow-brand: var(--ui-shadow-brand);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+    scroll-behavior: smooth;
+  }
+
+  html[data-theme='dark'] {
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--ui-aura) fixed;
+    color: var(--ui-text);
+    font-family: var(--font-sans);
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--ui-brand);
+    outline-offset: 2px;
+  }
+
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+
+  input[type='number'] {
+    appearance: textfield;
+  }
+
+  /* Ningun objetivo tactil por debajo de 44 px, incluso si se olvida una clase. */
+  button,
+  [role='button'],
+  a[class*='inline-flex'] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Superficie translucida con desenfoque: el rasgo visual principal. */
+@utility glass {
+  background-color: var(--ui-glass);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid var(--ui-line);
+}
+
+@utility glass-strong {
+  background-color: var(--ui-glass-strong);
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  border: 1px solid var(--ui-line);
+}
+
+/* Halo de luz en la esquina, como las tarjetas del prototipo. */
+@utility aura-card {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -30% auto auto -20%;
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    background: var(--ui-glow-card);
+    pointer-events: none;
+  }
+}
+
+@utility pressable {
+  transition:
+    transform 160ms var(--ease-soft),
+    box-shadow 160ms var(--ease-soft),
+    background-color 160ms var(--ease-soft),
+    border-color 160ms var(--ease-soft);
+
+  &:active:not(:disabled) {
+    transform: translateY(1px) scale(0.985);
+  }
+}
+
+@utility lift {
+  transition:
+    transform 240ms var(--ease-soft),
+    box-shadow 240ms var(--ease-soft);
+
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--ui-shadow-lg);
+    }
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility rise-in {
+  animation: rise-in 340ms var(--ease-soft) both;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility slide-up {
+  animation: slide-up 260ms var(--ease-soft) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}

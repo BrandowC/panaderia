@@ -1,0 +1,46 @@
+# Dependencias
+node_modules/
+.pnp
+.pnp.js
+
+# Build
+.next/
+out/
+build/
+dist/
+.open-next/
+
+# Entorno: solo .env.example puede versionarse
+.env
+.env.*
+!.env.example
+
+# Pruebas y cobertura
+coverage/
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+.last-run.json
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Registros
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts

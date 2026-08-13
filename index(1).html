@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#d97706" />
+  <title>Inventario de Panadería</title>
+  <style>
+    :root {
+      --bg: #fbf7ef;
+      --surface: rgba(255,255,255,.88);
+      --surface-solid: #ffffff;
+      --surface-2: #fff8ec;
+      --text: #2c211b;
+      --muted: #7a6a62;
+      --primary: #de8600;
+      --primary-strong: #b96a00;
+      --secondary: #7a4520;
+      --border: rgba(226, 207, 187, .95);
+      --success: #16803c;
+      --danger: #c91e2f;
+      --shadow: 0 24px 60px rgba(92, 57, 22, .12);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255,196,103,.45), transparent 28%),
+        radial-gradient(circle at right bottom, rgba(255,238,208,.8), transparent 28%),
+        linear-gradient(160deg, #fbf7ef 0%, #fffdf8 42%, #f8f1e6 100%);
+      min-height: 100vh;
+    }
+
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    input, textarea, select { color: var(--text); }
+    .hidden { display: none !important; }
+
+    .app-shell { min-height: 100vh; }
+
+    /* LOGIN */
+    .login-page {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .login-card {
+      width: min(520px, 100%);
+      padding: 38px;
+      border-radius: 34px;
+      background: linear-gradient(180deg, rgba(255,255,255,.76), rgba(255,255,255,.64));
+      border: 1px solid rgba(255,255,255,.65);
+      box-shadow: 0 30px 80px rgba(107, 66, 24, .18);
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+    }
+    .login-card::before {
+      content: "";
+      position: absolute;
+      inset: -20% auto auto -15%;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,184,79,.35), transparent 68%);
+      pointer-events: none;
+    }
+    .login-card::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      bottom: -50px;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(218,129,11,.16), transparent 70%);
+      pointer-events: none;
+    }
+    .login-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.66);
+      border: 1px solid rgba(222,134,0,.16);
+      color: var(--primary-strong);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+    .login-card h1 {
+      margin: 18px 0 10px;
+      font-size: clamp(34px, 6vw, 50px);
+      line-height: .96;
+      letter-spacing: -1.8px;
+      position: relative;
+      z-index: 1;
+    }
+    .login-card p {
+      margin: 0 0 28px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .field { display: grid; gap: 8px; margin-bottom: 16px; position: relative; z-index: 1; }
+    .field label { font-size: 14px; font-weight: 800; }
+    .field input, .field textarea, .field select {
+      width: 100%;
+      border: 1px solid rgba(220, 202, 186, .95);
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,.78);
+      outline: none;
+      transition: .18s ease;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus {
+      border-color: rgba(222,134,0,.9);
+      box-shadow: 0 0 0 4px rgba(222,134,0,.12);
+    }
+    .password-row { position: relative; }
+    .password-row input { padding-right: 46px; }
+    .password-toggle {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 0;
+      border-radius: 12px;
+      padding: 8px;
+      background: transparent;
+      color: var(--muted);
+    }
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #f7a718);
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(222,134,0,.22);
+    }
+    .btn-primary:hover { background: linear-gradient(135deg, var(--primary-strong), var(--primary)); }
+    .btn-secondary { background: var(--surface-2); color: var(--secondary); border: 1px solid var(--border); }
+    .btn-danger { background: #fff2f3; color: var(--danger); border: 1px solid #fecdd3; }
+    .btn-ghost { background: transparent; color: var(--muted); }
+    .btn-block { width: 100%; }
+    .btn-sm { padding: 9px 12px; border-radius: 12px; font-size: 13px; }
+    .btn-xs { padding: 7px 10px; border-radius: 11px; font-size: 12px; }
+
+    .demo-accounts {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px dashed rgba(208, 184, 163, .9);
+      display: grid;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+    .demo-account {
+      border: 1px solid rgba(220, 202, 186, .95);
+      background: rgba(255,255,255,.62);
+      border-radius: 16px;
+      padding: 12px 14px;
+      text-align: left;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .demo-account strong { color: var(--text); }
+
+    /* APP */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255,255,255,.72);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(235,219,204,.8);
+    }
+    .topbar-inner {
+      width: min(1180px, calc(100% - 24px));
+      min-height: 72px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      box-shadow: 0 10px 20px rgba(185,106,0,.18);
+      font-size: 24px;
+      flex: 0 0 auto;
+    }
+    .brand-copy strong { display: block; font-size: 16px; }
+    .brand-copy span { display: block; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,.74);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 10px 6px 6px;
+    }
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+    }
+    .user-chip small { display: block; color: var(--muted); font-size: 11px; }
+
+    .main-layout {
+      width: min(1180px, calc(100% - 24px));
+      margin: 22px auto 46px;
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      gap: 22px;
+    }
+    .sidebar {
+      background: rgba(255,255,255,.72);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 12px;
+      position: sticky;
+      top: 96px;
+      height: fit-content;
+      box-shadow: 0 10px 25px rgba(100,60,20,.05);
+    }
+    .nav-list { display: grid; gap: 6px; }
+    .nav-btn {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      border-radius: 14px;
+      padding: 12px 13px;
+      text-align: left;
+      color: var(--muted);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-btn:hover { background: var(--surface-2); color: var(--secondary); }
+    .nav-btn.active { background: linear-gradient(135deg, #fff5dd, #fff0d3); color: var(--primary-strong); }
+    .nav-divider { height: 1px; background: var(--border); margin: 8px 4px; }
+    .content { min-width: 0; }
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+    .eyebrow { color: var(--primary); font-size: 12px; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; }
+    .page-header h2 { margin: 6px 0 6px; font-size: clamp(28px, 4vw, 38px); line-height: 1; letter-spacing: -1px; }
+    .page-header p { margin: 0; color: var(--muted); line-height: 1.6; }
+    .header-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+    .stat-card {
+      background: rgba(255,255,255,.76);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 8px 20px rgba(100,60,20,.05);
+    }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .stat-icon { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--surface-2); font-size: 18px; }
+    .stat-card strong { display: block; margin-top: 12px; font-size: 26px; }
+    .stat-card span { font-size: 13px; color: var(--muted); }
+
+    .panel {
+      background: rgba(255,255,255,.74);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(100,60,20,.05);
+    }
+    .panel-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .panel-header h3 { margin: 0; font-size: 18px; }
+    .panel-body { padding: 18px; }
+
+    .toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .search-box { flex: 1; min-width: 220px; position: relative; }
+    .search-box input { width: 100%; padding: 12px 14px 12px 40px; border: 1px solid var(--border); border-radius: 16px; background: #fff; outline: none; }
+    .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(222,134,0,.10); }
+    .search-box span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); }
+
+    .inventory-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .product-card {
+      border: 1px solid rgba(224,205,188,.95);
+      border-radius: 18px;
+      padding: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,249,241,.95));
+      display: grid;
+      gap: 10px;
+      min-height: 0;
+    }
+    .product-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .product-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .product-emoji { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; background: var(--surface-2); font-size: 21px; flex: 0 0 auto; }
+    .product-title h4 { margin: 0; font-size: 15px; line-height: 1.2; }
+    .save-state { font-size: 10px; color: var(--success); background: #ecfdf3; border: 1px solid #bbf7d0; border-radius: 999px; padding: 5px 7px; white-space: nowrap; }
+    .quantity-control { display: grid; grid-template-columns: 38px 1fr 38px; gap: 8px; align-items: center; }
+    .qty-btn {
+      height: 38px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      border-radius: 12px;
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--secondary);
+    }
+    .qty-input {
+      width: 100%;
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 900;
+      background: rgba(255,255,255,.85);
+    }
+    .qty-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(222,134,0,.10); }
+    .product-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .product-foot small { color: var(--muted); font-size: 12px; }
+    .text-btn { border: 0; background: transparent; color: var(--danger); font-weight: 800; padding: 4px; }
+
+    .summary-bar {
+      position: sticky;
+      bottom: 12px;
+      margin-top: 16px;
+      z-index: 10;
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0;
+      box-shadow: none;
+    }
+    .summary-info { display: flex; align-items: center; gap: 18px; }
+    .summary-info strong { display: block; font-size: 20px; }
+    .summary-info span { display: block; font-size: 11px; color: rgba(255,255,255,.68); }
+    .summary-bar .btn { min-width: 260px; box-shadow: 0 18px 38px rgba(222,134,0,.24); }
+
+    .table-wrap { overflow: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 620px; }
+    th, td { padding: 13px 12px; border-bottom: 1px solid var(--border); text-align: left; font-size: 14px; }
+    th { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; background: rgba(255,248,236,.8); }
+    td strong { display: block; }
+    .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 5px 9px; font-size: 11px; font-weight: 800; }
+    .badge-success { color: var(--success); background: #ecfdf3; border: 1px solid #bbf7d0; }
+    .badge-warning { color: #92400e; background: #fffbeb; border: 1px solid #fde68a; }
+
+    .notice { border-radius: 18px; padding: 14px 16px; margin-bottom: 16px; line-height: 1.55; font-size: 14px; }
+    .notice-warning { background: #fffbeb; border: 1px solid #fde68a; color: #8a5703; }
+    .notice-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a; }
+
+    .empty-state { padding: 42px 20px; text-align: center; color: var(--muted); }
+    .empty-state .icon { font-size: 40px; margin-bottom: 10px; }
+
+    /* MODAL */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(38, 25, 17, .48);
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      z-index: 100;
+      backdrop-filter: blur(4px);
+    }
+    .modal {
+      width: min(620px, 100%);
+      max-height: 92vh;
+      overflow: auto;
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 26px 90px rgba(0,0,0,.24);
+    }
+    .modal-lg { width: min(860px, 100%); }
+    .modal-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .modal-header h3 { margin: 0; }
+    .modal-body { padding: 20px; }
+    .modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .modal-close { width: 38px; height: 38px; border-radius: 12px; border: 0; background: var(--surface-2); font-size: 20px; }
+
+    .report-sheet {
+      background: linear-gradient(180deg, #fff, #fffaf2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 26px;
+    }
+    .report-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      border-bottom: 2px solid var(--secondary);
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+    .report-brand { display: flex; gap: 12px; align-items: center; }
+    .report-logo { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; font-size: 28px; }
+    .report-brand h2 { margin: 0 0 4px; }
+    .report-brand p, .report-meta p { margin: 2px 0; color: var(--muted); font-size: 13px; }
+    .report-meta { text-align: right; }
+    .report-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0; }
+    .report-summary div { background: var(--surface-2); border-radius: 14px; padding: 12px; text-align: center; }
+    .report-summary strong { display: block; font-size: 21px; }
+    .report-summary span { color: var(--muted); font-size: 11px; }
+    .report-table { min-width: 0; width: 100%; }
+    .report-table th, .report-table td { padding: 10px 8px; }
+    .report-notes { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .toast-container { position: fixed; right: 18px; bottom: 18px; z-index: 200; display: grid; gap: 10px; width: min(360px, calc(100% - 36px)); }
+    .toast { background: #2f241f; color: white; border-radius: 14px; padding: 13px 15px; box-shadow: 0 16px 40px rgba(0,0,0,.22); animation: toastIn .2s ease; }
+    .toast.success { background: #166534; }
+    .toast.error { background: #991b1b; }
+    @keyframes toastIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+    .mobile-menu-btn { display: none; }
+
+    /* Responsive safeguards for controls, forms, tables and dialogs */
+    button, .btn, .nav-btn, .demo-account, .qty-btn, .modal-close {
+      min-height: 44px;
+      max-width: 100%;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn {
+      white-space: normal;
+      text-align: center;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+    input, select, textarea {
+      min-width: 0;
+      max-width: 100%;
+    }
+    .field, .search-box, .toolbar > *, .page-header > *, .panel-header > * {
+      min-width: 0;
+    }
+    .header-actions .btn, .row-actions .btn, .modal-footer .btn {
+      flex: 0 1 auto;
+    }
+    .dashboard-grid-two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .dashboard-report-grid { margin-bottom: 0; }
+    .table-wrap {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-gutter: stable;
+    }
+    .modal-header h3, .panel-header h3, .product-title h4, td, th {
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 980px) {
+      .main-layout { grid-template-columns: 1fr; }
+      .sidebar {
+        position: fixed;
+        top: 82px;
+        left: 12px;
+        right: 12px;
+        display: none;
+        z-index: 50;
+        box-shadow: 0 20px 80px rgba(0,0,0,.2);
+      }
+      .sidebar.open { display: block; }
+      .mobile-menu-btn { display: inline-flex; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 720px) {
+      .login-page { padding: 12px; }
+      .login-card { padding: 28px 22px; border-radius: 28px; }
+      .topbar-inner, .main-layout { width: calc(100% - 20px); }
+      .topbar-inner { min-height: 66px; }
+      .page-header { flex-direction: column; }
+      .page-header, .panel-header { align-items: stretch; }
+      .header-actions { width: 100%; }
+      .header-actions .btn { flex: 1 1 170px; }
+      .stats-grid { gap: 10px; }
+      .dashboard-grid-two { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .toolbar {
+        display: grid;
+        grid-template-columns: 1fr;
+        align-items: stretch;
+      }
+      .toolbar .field, .search-box { width: 100%; min-width: 0 !important; }
+      .inventory-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+      .product-card { padding: 10px; }
+      .product-title h4 { font-size: 14px; }
+      .product-emoji { width: 36px; height: 36px; font-size: 19px; }
+      .quantity-control { grid-template-columns: 42px minmax(0,1fr) 42px; gap: 6px; }
+      .qty-btn, .qty-input { height: 44px; }
+      .summary-bar { align-items: stretch; }
+      .summary-bar .btn { width: 100%; min-width: 0; }
+      .settings-grid { grid-template-columns: 1fr; }
+      .report-head { flex-direction: column; }
+      .report-meta { text-align: left; }
+      .modal-backdrop { padding: 10px; align-items: end; }
+      .modal { width: 100%; max-height: 94vh; border-radius: 24px 24px 0 0; }
+      .modal-body { padding: 16px; }
+      .modal-footer { padding: 14px 16px; }
+      .modal-footer .btn { flex: 1 1 100%; width: 100%; }
+      .row-actions .btn { flex: 1 1 120px; }
+    }
+    @media (max-width: 520px) {
+      .topbar-inner { gap: 8px; }
+      .brand { gap: 8px; }
+      .brand-logo { width: 40px; height: 40px; }
+      .brand-copy strong { font-size: 14px; }
+      .brand-copy span { max-width: 125px; }
+      .user-chip { padding: 5px; }
+      .user-chip .user-copy { display: none; }
+      .page-header h2 { font-size: clamp(27px, 9vw, 34px); }
+      .panel-header { flex-direction: column; align-items: stretch; }
+      .panel-header .btn { width: 100%; }
+      .dashboard-grid-two { grid-template-columns: 1fr; }
+      .report-summary { grid-template-columns: 1fr 1fr; }
+      .report-sheet { padding: 16px; }
+      .report-brand h2 { font-size: 20px; }
+      .report-table th, .report-table td { font-size: 12px; padding: 9px 6px; }
+      .toast-container { left: 10px; right: 10px; bottom: 10px; width: auto; }
+    }
+    @media (max-width: 430px) {
+      .inventory-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .product-card { gap: 8px; }
+      .product-head { gap: 6px; }
+      .save-state { display: none; }
+      .product-foot small { display: none; }
+      .product-foot { justify-content: flex-end; }
+      .quantity-control { grid-template-columns: 40px minmax(0,1fr) 40px; gap: 5px; }
+      .qty-input { font-size: 16px; }
+      .text-btn { min-height: 36px; }
+    }
+    @media (max-width: 360px) {
+      .inventory-grid { grid-template-columns: 1fr; }
+      .login-card { padding: 24px 18px; }
+      .brand-copy span { max-width: 90px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app-shell"></div>
+  <div id="modalRoot"></div>
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script>
+    'use strict';
+
+    const STORAGE = {
+      PRODUCTS: 'pancontrol_products_v2',
+      USERS: 'pancontrol_users_v2',
+      DRAFTS: 'pancontrol_drafts_v2',
+      REPORTS: 'pancontrol_reports_v2',
+      SETTINGS: 'pancontrol_settings_v2',
+      SESSION: 'pancontrol_session_v2'
+    };
+
+    const seedProducts = [
+      { id: cryptoId(), name: 'Pan jirafa', emoji: '🦒' },
+      { id: cryptoId(), name: 'Pan holandés', emoji: '🥖' },
+      { id: cryptoId(), name: 'Cuca', emoji: '🍪' },
+      { id: cryptoId(), name: 'Chicharrona', emoji: '🥐' },
+      { id: cryptoId(), name: 'Caña', emoji: '🍞' },
+      { id: cryptoId(), name: 'Pan aliñado', emoji: '🥯' },
+      { id: cryptoId(), name: 'Pan de queso', emoji: '🧀' },
+      { id: cryptoId(), name: 'Croissant', emoji: '🥐' },
+      { id: cryptoId(), name: 'Mogolla', emoji: '🍞' },
+      { id: cryptoId(), name: 'Rosca', emoji: '🥨' },
+      { id: cryptoId(), name: 'Pan integral', emoji: '🌾' },
+      { id: cryptoId(), name: 'Pandebono', emoji: '🧀' },
+      { id: cryptoId(), name: 'Pan coco', emoji: '🥥' },
+      { id: cryptoId(), name: 'Pan leche', emoji: '🥛' },
+      { id: cryptoId(), name: 'Pan mantequilla', emoji: '🧈' }
+    ];
+
+    const seedUsers = [
+      { id: 'usr-admin', name: 'Administrador', email: 'admin@panaderia.local', password: 'Admin123*', role: 'admin' },
+      { id: 'usr-employee', name: 'Empleado Demo', email: 'empleado@panaderia.local', password: 'Empleado123*', role: 'employee' }
+    ];
+
+    const defaultSettings = {
+      bakeryName: 'Panadería Dulce Hogar',
+      bakerySubtitle: 'Inventario diario',
+      logoEmoji: '🥖',
+      timezone: 'America/Bogota'
+    };
+
+    const state = {
+      session: null,
+      view: 'dashboard',
+      search: '',
+      menuOpen: false
+    };
+
+    function cryptoId() {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return 'id-' + Date.now().toString(36) + Math.random().toString(36).slice(2);
+    }
+
+    function xmlEscape(value = '') {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&apos;');
+    }
+
+    function escapeHtml(value = '') {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function readStorage(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (error) {
+        console.error(error);
+        return fallback;
+      }
+    }
+
+    function writeStorage(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+      } catch (error) {
+        console.error(error);
+        toast('No se pudo guardar la información.', 'error');
+        return false;
+      }
+    }
+
+    function initData() {
+      if (!localStorage.getItem(STORAGE.PRODUCTS)) writeStorage(STORAGE.PRODUCTS, seedProducts);
+      if (!localStorage.getItem(STORAGE.USERS)) writeStorage(STORAGE.USERS, seedUsers);
+      if (!localStorage.getItem(STORAGE.DRAFTS)) writeStorage(STORAGE.DRAFTS, {});
+      if (!localStorage.getItem(STORAGE.REPORTS)) writeStorage(STORAGE.REPORTS, []);
+      if (!localStorage.getItem(STORAGE.SETTINGS)) writeStorage(STORAGE.SETTINGS, defaultSettings);
+      state.session = readStorage(STORAGE.SESSION, null);
+    }
+
+    const getProducts = () => readStorage(STORAGE.PRODUCTS, []);
+    const saveProducts = (items) => writeStorage(STORAGE.PRODUCTS, items);
+    const getUsers = () => readStorage(STORAGE.USERS, []);
+    const saveUsers = (items) => writeStorage(STORAGE.USERS, items);
+    const getReports = () => readStorage(STORAGE.REPORTS, []);
+    const saveReports = (items) => writeStorage(STORAGE.REPORTS, items);
+    const getSettings = () => readStorage(STORAGE.SETTINGS, defaultSettings);
+
+    function todayKey() {
+      return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota', year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date());
+    }
+
+    function formatDateTime(dateValue) {
+      return new Intl.DateTimeFormat('es-CO', {
+        timeZone: 'America/Bogota',
+        dateStyle: 'long',
+        timeStyle: 'short'
+      }).format(new Date(dateValue));
+    }
+
+    function getDraftKey() {
+      return `${state.session.userId}_${todayKey()}`;
+    }
+
+    function getDraft() {
+      const drafts = readStorage(STORAGE.DRAFTS, {});
+      const key = getDraftKey();
+      if (!drafts[key]) {
+        drafts[key] = {
+          id: cryptoId(),
+          date: todayKey(),
+          userId: state.session.userId,
+          responsibleUserId: state.session.userId,
+          quantities: {},
+          notes: '',
+          updatedAt: new Date().toISOString()
+        };
+        writeStorage(STORAGE.DRAFTS, drafts);
+      }
+      return drafts[key];
+    }
+
+    function saveDraft(draft) {
+      const drafts = readStorage(STORAGE.DRAFTS, {});
+      draft.updatedAt = new Date().toISOString();
+      drafts[getDraftKey()] = draft;
+      writeStorage(STORAGE.DRAFTS, drafts);
+    }
+
+    function deleteDraft() {
+      const drafts = readStorage(STORAGE.DRAFTS, {});
+      delete drafts[getDraftKey()];
+      writeStorage(STORAGE.DRAFTS, drafts);
+    }
+
+    function currentUser() {
+      if (!state.session) return null;
+      return getUsers().find((user) => user.id === state.session.userId) || null;
+    }
+
+    function toast(message, type = '') {
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      el.textContent = message;
+      document.getElementById('toastContainer').appendChild(el);
+      setTimeout(() => el.remove(), 3200);
+    }
+
+    function render() {
+      const app = document.getElementById('app');
+      const user = currentUser();
+      if (!state.session || !user) {
+        localStorage.removeItem(STORAGE.SESSION);
+        state.session = null;
+        app.innerHTML = loginTemplate();
+        bindLoginEvents();
+        return;
+      }
+      app.innerHTML = appTemplate(user);
+      bindAppEvents();
+    }
+
+    function loginTemplate() {
+      return `
+        <main class="login-page">
+          <section class="login-card">
+            <span class="login-badge">🔐 Acceso al sistema</span>
+            <h1>Bienvenido</h1>
+            <p>Ingresa con una cuenta para entrar al inventario. Esta versión está pensada para verse bien en celular y funcionar de forma simple.</p>
+            <form id="loginForm" novalidate>
+              <div class="field">
+                <label for="email">Correo electrónico</label>
+                <input id="email" name="email" type="email" placeholder="correo@panaderia.com" autocomplete="username" required />
+              </div>
+              <div class="field">
+                <label for="password">Contraseña</label>
+                <div class="password-row">
+                  <input id="password" name="password" type="password" placeholder="Tu contraseña" autocomplete="current-password" required />
+                  <button class="password-toggle" id="togglePassword" type="button" aria-label="Mostrar contraseña">👁️</button>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-block" type="submit">Entrar</button>
+            </form>
+            <div class="demo-accounts">
+              <button class="demo-account" type="button" data-demo="admin"><strong>Administrador:</strong> admin@panaderia.local / Admin123*</button>
+              <button class="demo-account" type="button" data-demo="employee"><strong>Empleado:</strong> empleado@panaderia.local / Empleado123*</button>
+            </div>
+          </section>
+        </main>`;
+    }
+
+    function bindLoginEvents() {
+      document.getElementById('loginForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const email = event.target.email.value.trim().toLowerCase();
+        const password = event.target.password.value;
+        const user = getUsers().find((item) => item.email.toLowerCase() === email && item.password === password);
+        if (!user) return toast('Correo o contraseña incorrectos.', 'error');
+        state.session = { userId: user.id, loggedAt: new Date().toISOString() };
+        writeStorage(STORAGE.SESSION, state.session);
+        state.view = 'dashboard';
+        toast(`Bienvenido, ${user.name}.`, 'success');
+        render();
+      });
+
+      document.getElementById('togglePassword').addEventListener('click', () => {
+        const input = document.getElementById('password');
+        input.type = input.type === 'password' ? 'text' : 'password';
+      });
+
+      document.querySelectorAll('[data-demo]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const admin = button.dataset.demo === 'admin';
+          document.getElementById('email').value = admin ? 'admin@panaderia.local' : 'empleado@panaderia.local';
+          document.getElementById('password').value = admin ? 'Admin123*' : 'Empleado123*';
+        });
+      });
+    }
+
+    function appTemplate(user) {
+      const settings = getSettings();
+      return `
+        <header class="topbar">
+          <div class="topbar-inner">
+            <div class="brand">
+              <button class="btn btn-secondary btn-sm mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menú">☰</button>
+              <div class="brand-logo">${escapeHtml(settings.logoEmoji)}</div>
+              <div class="brand-copy">
+                <strong>${escapeHtml(settings.bakeryName)}</strong>
+                <span>${escapeHtml(settings.bakerySubtitle)}</span>
+              </div>
+            </div>
+            <div class="top-actions">
+              <div class="user-chip">
+                <div class="avatar">${escapeHtml(user.name.charAt(0).toUpperCase())}</div>
+                <div class="user-copy">
+                  <strong>${escapeHtml(user.name)}</strong>
+                  <small>${user.role === 'admin' ? 'Administrador' : 'Empleado'}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div class="main-layout">
+          <aside class="sidebar ${state.menuOpen ? 'open' : ''}" id="sidebar">
+            <nav class="nav-list">
+              ${navButton('dashboard', '🏠', 'Resumen')}
+              ${navButton('inventory', '🧮', 'Contar panes')}
+              ${navButton('reports', '🧾', 'Reportes')}
+              ${user.role === 'admin' ? `
+                <div class="nav-divider"></div>
+                ${navButton('products', '🥖', 'Productos')}
+                ${navButton('users', '👥', 'Usuarios')}
+                ${navButton('settings', '⚙️', 'Configuración')}
+              ` : ''}
+              <div class="nav-divider"></div>
+              <button class="nav-btn" id="logoutBtn">🚪 Cerrar sesión</button>
+            </nav>
+          </aside>
+          <main class="content">${viewTemplate(user)}</main>
+        </div>`;
+    }
+
+    function navButton(view, icon, label) {
+      return `<button class="nav-btn ${state.view === view ? 'active' : ''}" data-view="${view}">${icon} ${label}</button>`;
+    }
+
+    function viewTemplate(user) {
+      switch (state.view) {
+        case 'inventory': return inventoryTemplate();
+        case 'reports': return reportsTemplate(user);
+        case 'products': return user.role === 'admin' ? productsTemplate() : dashboardTemplate(user);
+        case 'users': return user.role === 'admin' ? usersTemplate() : dashboardTemplate(user);
+        case 'settings': return user.role === 'admin' ? settingsTemplate() : dashboardTemplate(user);
+        default: return dashboardTemplate(user);
+      }
+    }
+
+    function dashboardTemplate(user) {
+      const products = getProducts();
+      const reports = getReports();
+      const visibleReports = user.role === 'admin' ? reports : reports.filter((item) => item.createdByUserId === user.id || item.responsibleUserId === user.id);
+      const draft = getDraft();
+      const counted = Object.values(draft.quantities).filter((value) => Number(value) > 0).length;
+      const totalUnits = Object.values(draft.quantities).reduce((sum, value) => sum + Number(value || 0), 0);
+      const latestReport = [...visibleReports].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))[0] || null;
+      return `
+        <section class="page-header">
+          <div>
+            <span class="eyebrow">Panel principal</span>
+            <h2>Hola, ${escapeHtml(user.name.split(' ')[0])} 👋</h2>
+            <p>Visualiza el estado de los productos y el conteo actual de forma dinámica.</p>
+          </div>
+          <div class="header-actions"><button class="btn btn-primary" data-view="inventory">Iniciar conteo</button></div>
+        </section>
+        <section class="stats-grid dashboard-grid-two">
+          ${statCard('🥖', products.length, 'Productos disponibles')}
+          ${statCard('🧾', counted, `Conteo actual · ${totalUnits} unidades`) }
+        </section>
+        <section class="panel">
+          <div class="panel-header">
+            <h3>Reporte de conteo</h3>
+            <button class="btn btn-secondary btn-sm" data-view="reports">Ver reportes</button>
+          </div>
+          <div class="panel-body">
+            ${latestReport ? `
+              <div class="stats-grid dashboard-grid-two dashboard-report-grid">
+                <article class="stat-card">
+                  <div class="stat-top"><span>Último reporte</span><div class="stat-icon">📄</div></div>
+                  <strong>#${escapeHtml(latestReport.number)}</strong>
+                  <span>${escapeHtml(formatDateTime(latestReport.createdAt))}</span>
+                </article>
+                <article class="stat-card">
+                  <div class="stat-top"><span>Responsable</span><div class="stat-icon">👤</div></div>
+                  <strong>${escapeHtml(latestReport.responsibleName)}</strong>
+                  <span>${latestReport.totalReferences} referencias · ${latestReport.totalUnits} unidades</span>
+                </article>
+              </div>` : emptyState('🧾','Aún no hay reportes','Finaliza un inventario para generar el primer reporte.')}
+          </div>
+        </section>`;
+    }
+
+    function statCard(icon, value, label) {
+      return `<article class="stat-card"><div class="stat-top"><span>${label}</span><div class="stat-icon">${icon}</div></div><strong>${value}</strong><span>Actualizado ahora</span></article>`;
+    }
+
+    function inventoryTemplate() {
+      const draft = getDraft();
+      const products = getProducts();
+      const filtered = products.filter((product) => product.name.toLowerCase().includes(state.search.toLowerCase()));
+      const totalUnits = products.reduce((sum, product) => sum + Number(draft.quantities[product.id] || 0), 0);
+      const counted = products.filter((product) => Number(draft.quantities[product.id] || 0) > 0).length;
+      const users = getUsers();
+      const responsibleOptions = users.filter((user) => user.role === 'employee' || user.role === 'admin');
+      if (!responsibleOptions.find((user) => user.id === draft.responsibleUserId)) {
+        draft.responsibleUserId = responsibleOptions[0]?.id || state.session.userId;
+        saveDraft(draft);
+      }
+      return `
+        <section class="page-header">
+          <div>
+            <span class="eyebrow">Conteo diario</span>
+            <h2>Inventario de hoy</h2>
+            <p>${formatDateTime(new Date())}. Los cambios se guardan automáticamente en este navegador.</p>
+          </div>
+          <div class="header-actions"><button class="btn btn-secondary" id="clearDraftBtn">Limpiar conteo</button></div>
+        </section>
+        <div class="notice notice-warning"><strong>Versión local:</strong> funciona sin internet y guarda la información únicamente en este navegador.</div>
+        <section class="panel">
+          <div class="panel-body">
+            <div class="toolbar">
+              <div class="search-box"><span>🔎</span><input id="productSearch" value="${escapeHtml(state.search)}" placeholder="Buscar un pan..." /></div>
+              <div class="field" style="min-width:220px;margin:0">
+                <label for="responsibleSelect">Responsable del conteo</label>
+                <select id="responsibleSelect">
+                  ${responsibleOptions.map((user) => `<option value="${user.id}" ${user.id === draft.responsibleUserId ? 'selected' : ''}>${escapeHtml(user.name)}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+            <div class="inventory-grid">
+              ${filtered.length ? filtered.map((product) => productInventoryCard(product, draft)).join('') : emptyState('🔍','Sin resultados','Prueba con otro nombre de pan.')}
+            </div>
+            <div class="field" style="margin-top:16px;margin-bottom:0">
+              <label for="inventoryNotes">Observaciones</label>
+              <textarea id="inventoryNotes" rows="3" placeholder="Ejemplo: faltó producción de pan integral...">${escapeHtml(draft.notes || '')}</textarea>
+            </div>
+          </div>
+        </section>
+        <div class="summary-bar">
+          <button class="btn btn-primary" id="finalizeInventoryBtn">✅ Finalizar reporte</button>
+        </div>`;
+    }
+
+    function productInventoryCard(product, draft) {
+      const value = Number(draft.quantities[product.id] || 0);
+      return `
+        <article class="product-card">
+          <div class="product-head">
+            <div class="product-title">
+              <div class="product-emoji">${escapeHtml(product.emoji || '🥖')}</div>
+              <div><h4>${escapeHtml(product.name)}</h4></div>
+            </div>
+            <span class="save-state">Guardado</span>
+          </div>
+          <div class="quantity-control">
+            <button class="qty-btn" data-qty-action="minus" data-id="${product.id}" aria-label="Restar uno">−</button>
+            <input class="qty-input" data-qty-input="${product.id}" type="number" inputmode="numeric" min="0" step="1" value="${value}" aria-label="Cantidad de ${escapeHtml(product.name)}" />
+            <button class="qty-btn" data-qty-action="plus" data-id="${product.id}" aria-label="Sumar uno">+</button>
+          </div>
+          <div class="product-foot"><small>Unidades</small><button class="text-btn" data-qty-action="clear" data-id="${product.id}">Limpiar</button></div>
+        </article>`;
+    }
+
+    function reportsTemplate(user) {
+      const reports = getReports();
+      const visible = (user.role === 'admin' ? reports : reports.filter((report) => report.createdByUserId === user.id || report.responsibleUserId === user.id))
+        .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return `
+        <section class="page-header">
+          <div><span class="eyebrow">Historial</span><h2>Reportes</h2><p>Abre un reporte y compártelo por WhatsApp como imagen.</p></div>
+        </section>
+        <section class="panel"><div class="panel-body">${visible.length ? reportsTable(visible) : emptyState('🧾','No hay reportes','Cuando finalices un conteo aparecerá aquí.')}</div></section>`;
+    }
+
+    function reportsTable(reports) {
+      return `<div class="table-wrap"><table><thead><tr><th>Reporte</th><th>Fecha</th><th>Responsable</th><th>Referencias</th><th>Unidades</th><th></th></tr></thead><tbody>
+        ${reports.map((report) => `<tr>
+          <td><strong>#${escapeHtml(report.number)}</strong><span style="font-size:12px;color:var(--muted)">${escapeHtml(report.token.slice(0,8))}</span></td>
+          <td>${escapeHtml(formatDateTime(report.createdAt))}</td>
+          <td>${escapeHtml(report.responsibleName)}</td>
+          <td>${report.totalReferences}</td>
+          <td>${report.totalUnits}</td>
+          <td><button class="btn btn-secondary btn-sm" data-open-report="${report.id}">Ver</button></td>
+        </tr>`).join('')}
+      </tbody></table></div>`;
+    }
+
+    function productsTemplate() {
+      const products = getProducts();
+      return `
+        <section class="page-header">
+          <div><span class="eyebrow">Administración</span><h2>Productos</h2><p>Crea, edita o elimina panes del inventario.</p></div>
+          <div class="header-actions"><button class="btn btn-primary" id="addProductBtn">+ Agregar producto</button></div>
+        </section>
+        <section class="panel"><div class="panel-body">
+          <div class="table-wrap"><table><thead><tr><th>Producto</th><th>Emoji</th><th>Acciones</th></tr></thead><tbody>
+            ${products.map((product) => `<tr>
+              <td><strong>${escapeHtml(product.name)}</strong></td>
+              <td>${escapeHtml(product.emoji || '🥖')}</td>
+              <td><div class="row-actions"><button class="btn btn-secondary btn-sm" data-edit-product="${product.id}">Editar</button><button class="btn btn-danger btn-sm" data-delete-product="${product.id}">Eliminar</button></div></td>
+            </tr>`).join('')}
+          </tbody></table></div>
+        </div></section>`;
+    }
+
+    function usersTemplate() {
+      const users = getUsers();
+      return `
+        <section class="page-header">
+          <div><span class="eyebrow">Administración</span><h2>Usuarios</h2><p>Gestiona los empleados que pueden ingresar.</p></div>
+          <div class="header-actions"><button class="btn btn-primary" id="addUserBtn">+ Agregar empleado</button></div>
+        </section>
+        <section class="panel"><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Acciones</th></tr></thead><tbody>
+          ${users.map((user) => `<tr>
+            <td><strong>${escapeHtml(user.name)}</strong></td>
+            <td>${escapeHtml(user.email)}</td>
+            <td><span class="badge badge-warning">${user.role === 'admin' ? 'Administrador' : 'Empleado'}</span></td>
+            <td>${user.id === state.session.userId ? '<span style="font-size:12px;color:var(--muted)">Sesión actual</span>' : `<button class="btn btn-danger btn-sm" data-delete-user="${user.id}">Eliminar</button>`}</td>
+          </tr>`).join('')}
+        </tbody></table></div></div></section>`;
+    }
+
+    function settingsTemplate() {
+      const settings = getSettings();
+      return `
+        <section class="page-header"><div><span class="eyebrow">Personalización</span><h2>Configuración</h2><p>Actualiza la información visible de la panadería.</p></div></section>
+        <section class="panel"><div class="panel-body">
+          <form id="settingsForm">
+            <div class="settings-grid">
+              <div class="field"><label for="bakeryName">Nombre de la panadería</label><input id="bakeryName" name="bakeryName" value="${escapeHtml(settings.bakeryName)}" required /></div>
+              <div class="field"><label for="logoEmoji">Ícono o emoji</label><input id="logoEmoji" name="logoEmoji" value="${escapeHtml(settings.logoEmoji)}" maxlength="4" /></div>
+              <div class="field"><label for="bakerySubtitle">Descripción corta</label><input id="bakerySubtitle" name="bakerySubtitle" value="${escapeHtml(settings.bakerySubtitle)}" /></div>
+              <div class="field"><label for="timezone">Zona horaria</label><input id="timezone" value="America/Bogota" disabled /></div>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-primary" type="submit">Guardar configuración</button>
+            </div>
+          </form>
+        </div></section>`;
+    }
+
+    function emptyState(icon, title, text) {
+      return `<div class="empty-state"><div class="icon">${icon}</div><strong>${title}</strong><p>${text}</p></div>`;
+    }
+
+    function bindAppEvents() {
+      document.querySelectorAll('[data-view]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.view = button.dataset.view;
+          state.menuOpen = false;
+          render();
+        });
+      });
+
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem(STORAGE.SESSION);
+        state.session = null;
+        render();
+      });
+
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', () => {
+        state.menuOpen = !state.menuOpen;
+        document.getElementById('sidebar').classList.toggle('open', state.menuOpen);
+      });
+
+      bindInventoryEvents();
+      bindReportsEvents();
+      bindProductEvents();
+      bindUserEvents();
+      bindSettingsEvents();
+    }
+
+    function bindInventoryEvents() {
+      const search = document.getElementById('productSearch');
+      if (search) search.addEventListener('input', (event) => {
+        state.search = event.target.value;
+        render();
+      });
+
+      const responsibleSelect = document.getElementById('responsibleSelect');
+      if (responsibleSelect) responsibleSelect.addEventListener('change', (event) => {
+        const draft = getDraft();
+        draft.responsibleUserId = event.target.value;
+        saveDraft(draft);
+      });
+
+      document.querySelectorAll('[data-qty-action]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const id = button.dataset.id;
+          const action = button.dataset.qtyAction;
+          const draft = getDraft();
+          let value = Number(draft.quantities[id] || 0);
+          if (action === 'plus') value += 1;
+          if (action === 'minus') value = Math.max(0, value - 1);
+          if (action === 'clear') value = 0;
+          draft.quantities[id] = value;
+          saveDraft(draft);
+          updateInventoryUI(id, value);
+        });
+      });
+
+      document.querySelectorAll('[data-qty-input]').forEach((input) => {
+        input.addEventListener('input', () => {
+          const id = input.dataset.qtyInput;
+          let value = Number.parseInt(input.value, 10);
+          if (!Number.isFinite(value) || value < 0) value = 0;
+          input.value = value;
+          const draft = getDraft();
+          draft.quantities[id] = value;
+          saveDraft(draft);
+          updateInventoryUI(id, value, false);
+        });
+      });
+
+      const notes = document.getElementById('inventoryNotes');
+      if (notes) notes.addEventListener('input', () => {
+        const draft = getDraft();
+        draft.notes = notes.value.slice(0, 500);
+        saveDraft(draft);
+      });
+
+      const clearDraftBtn = document.getElementById('clearDraftBtn');
+      if (clearDraftBtn) clearDraftBtn.addEventListener('click', () => {
+        confirmModal('¿Limpiar el conteo?', 'Se borrarán todas las cantidades registradas hoy.', () => {
+          const draft = getDraft();
+          draft.quantities = {};
+          draft.notes = '';
+          saveDraft(draft);
+          toast('Conteo limpiado.', 'success');
+          render();
+        });
+      });
+
+      const finalizeBtn = document.getElementById('finalizeInventoryBtn');
+      if (finalizeBtn) finalizeBtn.addEventListener('click', finalizeInventory);
+    }
+
+    function updateInventoryUI(id, value, updateInput = true) {
+      if (updateInput) {
+        const input = document.querySelector(`[data-qty-input="${id}"]`);
+        if (input) input.value = value;
+      }
+      const draft = getDraft();
+      const products = getProducts();
+      const total = products.reduce((sum, product) => sum + Number(draft.quantities[product.id] || 0), 0);
+      const counted = products.filter((product) => Number(draft.quantities[product.id] || 0) > 0).length;
+      const totalEl = document.getElementById('totalUnits');
+      const countedEl = document.getElementById('countedProducts');
+      if (totalEl) totalEl.textContent = total;
+      if (countedEl) countedEl.textContent = counted;
+    }
+
+    function finalizeInventory() {
+      const draft = getDraft();
+      const products = getProducts();
+      const users = getUsers();
+      const responsible = users.find((item) => item.id === draft.responsibleUserId) || currentUser();
+      const items = products.map((product) => ({
+        productId: product.id,
+        name: product.name,
+        quantity: Number(draft.quantities[product.id] || 0)
+      }));
+      const nonZeroItems = items.filter((item) => item.quantity > 0);
+      if (!nonZeroItems.length) return toast('Registra al menos una cantidad antes de finalizar.', 'error');
+      const totalUnits = items.reduce((sum, item) => sum + item.quantity, 0);
+      confirmModal('¿Finalizar el inventario?', `Se generará un reporte con ${nonZeroItems.length} referencias y ${totalUnits} unidades.`, () => {
+        const reports = getReports();
+        const createdAt = new Date().toISOString();
+        const number = String(reports.length + 1).padStart(4, '0');
+        const report = {
+          id: cryptoId(),
+          token: cryptoId().replaceAll('-', '') + cryptoId().replaceAll('-', ''),
+          number,
+          createdAt,
+          createdByUserId: state.session.userId,
+          responsibleUserId: responsible.id,
+          responsibleName: responsible.name,
+          items,
+          totalReferences: nonZeroItems.length,
+          totalUnits,
+          notes: draft.notes || '',
+          settings: getSettings()
+        };
+        reports.push(report);
+        saveReports(reports);
+        deleteDraft();
+        toast('Reporte generado correctamente.', 'success');
+        state.view = 'reports';
+        render();
+        openReport(report.id);
+      });
+    }
+
+    function bindReportsEvents() {
+      document.querySelectorAll('[data-open-report]').forEach((button) => {
+        button.addEventListener('click', () => openReport(button.dataset.openReport));
+      });
+    }
+
+    function openReport(reportId) {
+      const report = getReports().find((item) => item.id === reportId);
+      if (!report) return toast('No se encontró el reporte.', 'error');
+      document.getElementById('modalRoot').innerHTML = `
+        <div class="modal-backdrop" id="reportModal">
+          <section class="modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+            <div class="modal-header"><h3 id="reportTitle">Reporte #${escapeHtml(report.number)}</h3><button class="modal-close" data-close-modal aria-label="Cerrar">×</button></div>
+            <div class="modal-body">${reportSheet(report)}<div class="notice notice-info" style="margin-top:16px">Desde celular podrás compartir la imagen directamente y elegir WhatsApp. Si tu navegador no lo permite, la imagen se descargará.</div></div>
+            <div class="modal-footer"><button class="btn btn-primary" id="whatsappImageBtn">💬 Compartir imagen</button></div>
+          </section>
+        </div>`;
+      bindModalClose();
+      document.getElementById('whatsappImageBtn').addEventListener('click', () => shareReportAsImage(report));
+    }
+
+    function reportSheet(report) {
+      const visibleItems = report.items.filter((item) => item.quantity > 0);
+      return `<article class="report-sheet">
+        <div class="report-head">
+          <div class="report-brand"><div class="report-logo">${escapeHtml(report.settings.logoEmoji || '🥖')}</div><div><h2>${escapeHtml(report.settings.bakeryName)}</h2><p>${escapeHtml(report.settings.bakerySubtitle || 'Inventario diario')}</p></div></div>
+          <div class="report-meta"><strong>Reporte #${escapeHtml(report.number)}</strong><p>${escapeHtml(formatDateTime(report.createdAt))}</p><p>Responsable: ${escapeHtml(report.responsibleName)}</p></div>
+        </div>
+        <div class="report-summary">
+          <div><strong>${report.totalReferences}</strong><span>Referencias</span></div>
+          <div><strong>${report.totalUnits}</strong><span>Unidades</span></div>
+          <div><strong>Finalizado</strong><span>Estado</span></div>
+        </div>
+        <table class="report-table"><thead><tr><th>Producto</th><th style="text-align:right">Cantidad</th></tr></thead><tbody>
+          ${visibleItems.map((item) => `<tr><td><strong>${escapeHtml(item.name)}</strong></td><td style="text-align:right;font-weight:800">${item.quantity}</td></tr>`).join('')}
+        </tbody></table>
+        <div class="report-notes"><strong>Observaciones:</strong> ${escapeHtml(report.notes || 'Sin observaciones.')}<br><br><small>Identificador: ${escapeHtml(report.token)}</small></div>
+      </article>`;
+    }
+
+    async function shareReportAsImage(report) {
+      try {
+        const blob = await generateReportImageBlob(report);
+        const filename = `inventario-${report.number}.png`;
+        const file = new File([blob], filename, { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+          await navigator.share({ files: [file], title: `Inventario ${report.number}`, text: `Inventario de ${report.settings.bakeryName}` });
+          toast('Imagen lista para enviar por WhatsApp.', 'success');
+          return;
+        }
+        downloadBlob(blob, filename);
+        toast('Tu navegador no permite compartir directo. Se descargó la imagen del reporte para que la envíes por WhatsApp.', 'success');
+        try { window.open('https://wa.me/', '_blank'); } catch (_) {}
+      } catch (error) {
+        console.error(error);
+        toast('No fue posible generar la imagen.', 'error');
+      }
+    }
+
+    async function generateReportImageBlob(report) {
+      const visibleItems = report.items.filter((item) => item.quantity > 0);
+      const width = 1200;
+      const rowHeight = 72;
+      const headerStartY = 420;
+      const rowsHeight = Math.max(visibleItems.length * rowHeight, 72);
+      const notesY = headerStartY + 48 + rowsHeight + 34;
+      const notesHeight = 120;
+      const footerGap = 58;
+      const height = notesY + notesHeight + footerGap;
+      const safeNotes = xmlEscape((report.notes || 'Sin observaciones.').slice(0, 120));
+
+      const rows = visibleItems.map((item, index) => {
+        const y = headerStartY + 38 + index * rowHeight;
+        return `
+          <rect x="86" y="${y - 30}" width="1028" height="54" rx="18" fill="#fbf6eb" stroke="#eee1c9" />
+          <text x="112" y="${y + 4}" font-size="24" font-weight="700" fill="#2c211b">${xmlEscape(item.name)}</text>
+          <text x="1080" y="${y + 4}" font-size="24" font-weight="800" text-anchor="end" fill="#b97708">${item.quantity}</text>`;
+      }).join('');
+
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+          <defs>
+            <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stop-color="#fffaf2" />
+              <stop offset="100%" stop-color="#fff2dc" />
+            </linearGradient>
+            <linearGradient id="brand" x1="0" x2="1">
+              <stop offset="0%" stop-color="#de8600" />
+              <stop offset="100%" stop-color="#7a4520" />
+            </linearGradient>
+          </defs>
+
+          <rect width="100%" height="100%" fill="url(#bg)"/>
+          <rect x="42" y="40" width="1116" height="${height - 80}" rx="34" fill="#ffffff" stroke="#ead9c7" stroke-width="2"/>
+
+          <rect x="86" y="82" width="82" height="82" rx="24" fill="url(#brand)"/>
+          <text x="127" y="136" text-anchor="middle" font-size="40">${xmlEscape(report.settings.logoEmoji || '🥖')}</text>
+          <text x="196" y="118" font-size="40" font-weight="800" fill="#2c211b">${xmlEscape(report.settings.bakeryName)}</text>
+          <text x="196" y="152" font-size="18" fill="#7a6a62">${xmlEscape(report.settings.bakerySubtitle || 'Inventario diario')}</text>
+
+          <text x="1088" y="112" text-anchor="end" font-size="32" font-weight="800" fill="#2c211b">Reporte #${xmlEscape(report.number)}</text>
+          <text x="1088" y="144" text-anchor="end" font-size="18" fill="#7a6a62">${xmlEscape(formatDateTime(report.createdAt))}</text>
+          <text x="1088" y="172" text-anchor="end" font-size="18" fill="#7a6a62">Responsable: ${xmlEscape(report.responsibleName)}</text>
+
+          <rect x="86" y="212" width="312" height="110" rx="24" fill="#fbf6eb" stroke="#ead9c7"/>
+          <rect x="444" y="212" width="312" height="110" rx="24" fill="#fbf6eb" stroke="#ead9c7"/>
+          <rect x="802" y="212" width="312" height="110" rx="24" fill="#fbf6eb" stroke="#ead9c7"/>
+
+          <text x="242" y="258" text-anchor="middle" font-size="42" font-weight="800" fill="#2c211b">${report.totalReferences}</text>
+          <text x="242" y="290" text-anchor="middle" font-size="18" fill="#7a6a62">Referencias</text>
+
+          <text x="600" y="258" text-anchor="middle" font-size="42" font-weight="800" fill="#2c211b">${report.totalUnits}</text>
+          <text x="600" y="290" text-anchor="middle" font-size="18" fill="#7a6a62">Unidades</text>
+
+          <text x="958" y="258" text-anchor="middle" font-size="34" font-weight="800" fill="#16803c">Finalizado</text>
+          <text x="958" y="290" text-anchor="middle" font-size="18" fill="#7a6a62">Estado</text>
+
+          <text x="86" y="376" font-size="18" font-weight="800" fill="#7a6a62">PRODUCTO</text>
+          <text x="1080" y="376" text-anchor="end" font-size="18" font-weight="800" fill="#7a6a62">CANTIDAD</text>
+
+          ${rows}
+
+          <rect x="86" y="${notesY}" width="1028" height="${notesHeight}" rx="22" fill="#fbf6eb" stroke="#ead9c7"/>
+          <text x="112" y="${notesY + 34}" font-size="20" font-weight="800" fill="#2c211b">Observaciones</text>
+          <text x="112" y="${notesY + 72}" font-size="19" fill="#7a6a62">${safeNotes}</text>
+        </svg>`;
+
+      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const image = new Image();
+      image.decoding = 'async';
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+
+      await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = reject;
+        image.src = url;
+      });
+
+      ctx.drawImage(image, 0, 0);
+      URL.revokeObjectURL(url);
+
+      return await new Promise((resolve, reject) => {
+        canvas.toBlob((pngBlob) => {
+          if (pngBlob) resolve(pngBlob);
+          else reject(new Error('No fue posible crear el PNG'));
+        }, 'image/png');
+      });
+    }
+
+    function downloadBlob(content, filename, explicitType = 'application/octet-stream') {
+      const blob = content instanceof Blob ? content : new Blob([content], { type: explicitType });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function bindProductEvents() {
+      const add = document.getElementById('addProductBtn');
+      if (add) add.addEventListener('click', () => productModal());
+
+      document.querySelectorAll('[data-edit-product]').forEach((button) => {
+        button.addEventListener('click', () => productModal(button.dataset.editProduct));
+      });
+
+      document.querySelectorAll('[data-delete-product]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const productId = button.dataset.deleteProduct;
+          const product = getProducts().find((item) => item.id === productId);
+          if (!product) return;
+          confirmModal('¿Eliminar producto?', `Se eliminará ${product.name} del inventario actual.`, () => {
+            const products = getProducts().filter((item) => item.id !== productId);
+            saveProducts(products);
+            removeProductFromDrafts(productId);
+            toast('Producto eliminado.', 'success');
+            render();
+          });
+        });
+      });
+    }
+
+    function removeProductFromDrafts(productId) {
+      const drafts = readStorage(STORAGE.DRAFTS, {});
+      Object.values(drafts).forEach((draft) => {
+        if (draft.quantities && productId in draft.quantities) delete draft.quantities[productId];
+      });
+      writeStorage(STORAGE.DRAFTS, drafts);
+    }
+
+    function productModal(productId = null) {
+      const product = productId ? getProducts().find((item) => item.id === productId) : null;
+      document.getElementById('modalRoot').innerHTML = `
+        <div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true">
+          <div class="modal-header"><h3>${product ? 'Editar producto' : 'Agregar producto'}</h3><button class="modal-close" data-close-modal>×</button></div>
+          <form id="productForm">
+            <div class="modal-body">
+              <div class="field"><label for="productName">Nombre</label><input id="productName" name="name" value="${escapeHtml(product?.name || '')}" required maxlength="80" /></div>
+              <div class="field"><label for="productEmoji">Emoji</label><input id="productEmoji" name="emoji" value="${escapeHtml(product?.emoji || '🥖')}" maxlength="4" /></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary" type="button" data-close-modal>Cancelar</button><button class="btn btn-primary" type="submit">Guardar</button></div>
+          </form>
+        </section></div>`;
+      bindModalClose();
+      document.getElementById('productForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const form = new FormData(event.target);
+        const name = String(form.get('name')).trim();
+        const emoji = String(form.get('emoji')).trim() || '🥖';
+        if (!name) return toast('Escribe el nombre del producto.', 'error');
+        const products = getProducts();
+        if (products.some((item) => item.name.toLowerCase() === name.toLowerCase() && item.id !== productId)) return toast('Ya existe un producto con ese nombre.', 'error');
+        if (product) {
+          product.name = name;
+          product.emoji = emoji;
+        } else {
+          products.push({ id: cryptoId(), name, emoji });
+        }
+        saveProducts(products);
+        closeModal();
+        toast('Producto guardado.', 'success');
+        render();
+      });
+    }
+
+    function bindUserEvents() {
+      const add = document.getElementById('addUserBtn');
+      if (add) add.addEventListener('click', userModal);
+
+      document.querySelectorAll('[data-delete-user]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const userId = button.dataset.deleteUser;
+          const user = getUsers().find((item) => item.id === userId);
+          if (!user) return;
+          confirmModal('¿Eliminar usuario?', `Se eliminará ${user.name} del sistema.`, () => {
+            const users = getUsers().filter((item) => item.id !== userId);
+            saveUsers(users);
+            toast('Usuario eliminado.', 'success');
+            render();
+          });
+        });
+      });
+    }
+
+    function userModal() {
+      document.getElementById('modalRoot').innerHTML = `
+        <div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true">
+          <div class="modal-header"><h3>Agregar empleado</h3><button class="modal-close" data-close-modal>×</button></div>
+          <form id="userForm"><div class="modal-body">
+            <div class="field"><label for="userName">Nombre completo</label><input id="userName" name="name" required maxlength="80" /></div>
+            <div class="field"><label for="userEmail">Correo</label><input id="userEmail" name="email" type="email" required /></div>
+            <div class="field"><label for="userPassword">Contraseña temporal</label><input id="userPassword" name="password" type="password" minlength="8" required /></div>
+          </div><div class="modal-footer"><button class="btn btn-secondary" type="button" data-close-modal>Cancelar</button><button class="btn btn-primary" type="submit">Crear empleado</button></div></form>
+        </section></div>`;
+      bindModalClose();
+      document.getElementById('userForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const form = new FormData(event.target);
+        const name = String(form.get('name')).trim();
+        const email = String(form.get('email')).trim().toLowerCase();
+        const password = String(form.get('password'));
+        if (password.length < 8) return toast('La contraseña debe tener mínimo 8 caracteres.', 'error');
+        const users = getUsers();
+        if (users.some((item) => item.email.toLowerCase() === email)) return toast('Ese correo ya está registrado.', 'error');
+        users.push({ id: cryptoId(), name, email, password, role: 'employee' });
+        saveUsers(users);
+        closeModal();
+        toast('Empleado creado.', 'success');
+        render();
+      });
+    }
+
+    function bindSettingsEvents() {
+      const form = document.getElementById('settingsForm');
+      if (form) form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const data = new FormData(event.target);
+        const settings = {
+          bakeryName: String(data.get('bakeryName')).trim(),
+          bakerySubtitle: String(data.get('bakerySubtitle')).trim(),
+          logoEmoji: String(data.get('logoEmoji')).trim() || '🥖',
+          timezone: 'America/Bogota'
+        };
+        writeStorage(STORAGE.SETTINGS, settings);
+        toast('Configuración guardada.', 'success');
+        render();
+      });
+    }
+
+    function confirmModal(title, message, onConfirm) {
+      document.getElementById('modalRoot').innerHTML = `
+        <div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true">
+          <div class="modal-header"><h3>${escapeHtml(title)}</h3><button class="modal-close" data-close-modal>×</button></div>
+          <div class="modal-body"><p style="margin:0;color:var(--muted);line-height:1.65">${escapeHtml(message)}</p></div>
+          <div class="modal-footer"><button class="btn btn-secondary" type="button" data-close-modal>Cancelar</button><button class="btn btn-primary" id="confirmActionBtn">Confirmar</button></div>
+        </section></div>`;
+      bindModalClose();
+      document.getElementById('confirmActionBtn').addEventListener('click', () => {
+        closeModal();
+        onConfirm();
+      });
+    }
+
+    function bindModalClose() {
+      document.querySelectorAll('[data-close-modal]').forEach((button) => button.addEventListener('click', closeModal));
+      const backdrop = document.querySelector('.modal-backdrop');
+      if (backdrop) backdrop.addEventListener('click', (event) => {
+        if (event.target === backdrop) closeModal();
+      });
+    }
+
+    function closeModal() {
+      document.getElementById('modalRoot').innerHTML = '';
+    }
+
+    initData();
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+[
+  {"name":"Pan jirafa","category":"Panes dulces","sortOrder":10,"quantityExample":80},
+  {"name":"Pan holandés","category":"Panes dulces","sortOrder":20,"quantityExample":42},
+  {"name":"Cuca","category":"Tradicionales","sortOrder":30,"quantityExample":36},
+  {"name":"Chicharrona","category":"Hojaldres","sortOrder":40,"quantityExample":27},
+  {"name":"Caña","category":"Panes dulces","sortOrder":50,"quantityExample":18},
+  {"name":"Rollo","category":"Panes dulces","sortOrder":60,"quantityExample":24},
+  {"name":"Rosquita","category":"Tradicionales","sortOrder":70,"quantityExample":55},
+  {"name":"Pan de queso","category":"Quesos","sortOrder":80,"quantityExample":31},
+  {"name":"Almojábana","category":"Quesos","sortOrder":90,"quantityExample":29},
+  {"name":"Pandebono","category":"Quesos","sortOrder":100,"quantityExample":44},
+  {"name":"Croissant","category":"Hojaldres","sortOrder":110,"quantityExample":16},
+  {"name":"Pan de coco","category":"Panes dulces","sortOrder":120,"quantityExample":21},
+  {"name":"Pan aliñado","category":"Panes básicos","sortOrder":130,"quantityExample":64},
+  {"name":"Mogolla","category":"Panes básicos","sortOrder":140,"quantityExample":38},
+  {"name":"Pan blandito","category":"Panes básicos","sortOrder":150,"quantityExample":72}
+]

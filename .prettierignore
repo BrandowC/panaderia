@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+coverage/
+package-lock.json
+*.md
+
+# Documentacion del kit: se conserva tal como fue entregada.
+docs/
+
+# Prototipo de referencia entregado por el propietario: no se modifica.
+index(1).html
+
+# Utilidades de verificacion de linea de comandos.
+scripts/

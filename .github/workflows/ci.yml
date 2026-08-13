@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, tipos, pruebas y build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Verificacion de tipos
+        run: npm run typecheck
+
+      - name: Pruebas
+        run: npm run test
+
+      - name: Formato
+        run: npm run format:check
+
+      - name: Build de produccion
+        run: npm run build
+        env:
+          # Valores ficticios: el build no debe requerir credenciales reales.
+          NEXT_PUBLIC_SUPABASE_URL: https://ci.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-anon-key
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+
+  # Las pruebas E2E necesitan una base real, asi que solo corren cuando el
+  # repositorio tiene configurados los secretos de un proyecto de pruebas.
+  e2e:
+    name: Pruebas de extremo a extremo
+    runs-on: ubuntu-latest
+    needs: quality
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Instalar navegador
+        run: npx playwright install --with-deps chromium
+
+      - name: Preparar entorno
+        run: |
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}"
+            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}"
+            echo "NEXT_PUBLIC_SITE_URL=http://localhost:3210"
+            echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
+          } > .env.local
+
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SITE_URL: http://localhost:3210
+
+      - run: npm run test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
